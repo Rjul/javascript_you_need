@@ -1,6 +1,6 @@
 
 class Computed {
-    constructor(name, atEval, updatorEventsNames){
+    constructor(name, atEval, updatorEventsNames) {
         this.name = name
         this.computed = atEval
         this.values = '';
@@ -23,25 +23,38 @@ class Computed {
                     }
                 }
             `)
-        updatorEventsNames.forEach(function (updatorEventName) {
-            console.log(name)
-            eval(`document.addEventListener('${updatorEventName}', function (){
+        eval(`
+                this.set = function (value) {
+                    this.value = value
+                    document.dispatchEvent(new CustomEvent('event${name}'))
+                }
+                this.get = function () {
+                    return this.value
+                }
+                `)
+        let computedEventListener = '';
+        Array.from(updatorEventsNames).forEach(eventName => {
+            computedEventListener += `document.addEventListener('${eventName}', function (){
+                console.log('test')
                 try{
-                    ${atEval}
-                    console.log('${name}')
+                    eval(computedStore.${name}.atEval);
                     Array.from(document.getElementsByClassName('${name}')).forEach(target => {
                         try{
-                            target.innerHTML = this.values
+                            console.log(target)
+                            target.innerHTML = this.computedStore.${name}.get
                         }catch{
                             console.error("Class target :" + target + " Invalid result")
                         }
                     })
-                }catch
+                }catch(exception)
                 {
-                    
+                    console.error(exception)
                 }
-            },1)`)
-        });
+            },1);
+            `
+        })
+        this.computedEventListener = computedEventListener;
+
     }
 }
 export default Computed;

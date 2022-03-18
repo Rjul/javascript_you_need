@@ -1,11 +1,13 @@
-class YouNeed{
+import Computed from './Computed.js';
+
+class YouNeed {
 
     constructor(conf, states) {
-        const apliedVariableDynamic = function(targetClass, data) {
+        const apliedVariableDynamic = function (targetClass, data) {
             Array.from(document.getElementsByClassName(targetClass)).forEach(target => {
-                try{
+                try {
                     target.innerHTML = data
-                }catch{
+                } catch {
                     console.error("Class target :" + target + " Invalid result")
                 }
             })
@@ -15,34 +17,36 @@ class YouNeed{
 
             /**
              * Init variable into dom part
-             */ 
+             */
             console.log(states.getStored)
             for (const [key, value] of Object.entries(states.getStored)) {
-                if (conf._debug_verbose){
-                    console.log('[YouNeed] Variable :'+ key, value)
+                if (conf._debug_verbose) {
+                    console.log('[YouNeed] Variable :' + key, value)
                 }
-                try{
+                try {
                     apliedVariableDynamic(key, value);
                 }
-                catch(error){
-                    if (conf._debug_verbose){
-                        console.error('[YOU NEED] Verbose '+ conf._debug_verbose)
-                        console.error('[YOU NEED] '+ error)
-                    }          
+                catch (error) {
+                    if (conf._debug_verbose) {
+                        console.error('[YOU NEED] Verbose ' + conf._debug_verbose)
+                        console.error('[YOU NEED] ' + error)
+                    }
                 }
             };
 
             /**
              *  Part for _bind
              */
-            
+
             document.querySelectorAll('[_bind]').forEach(bindingElms => {
-                if (conf._debug_verbose){ console.log(bindingElms) };
-                bindingElms.addEventListener('input', function (event){
+                if (conf._debug_verbose) { console.log(bindingElms) };
+                states = Object.assign(states, eval(`let ${bindingElms.getAttribute('_bind')}`))
+                console.log(states)
+                bindingElms.addEventListener('input', function (event) {
                     let target = event.target.getAttribute('_bind')
                     console.log(states)
                     eval(`
-                        states.computedStates.set${target}('${event.target.value}')
+                        states.set${target}('${event.target.value}')
                     `)
                 })
             })

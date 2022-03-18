@@ -7,16 +7,15 @@ import ComputedStore from './YouNeed/ComputedStore.js';
 /**
  *  INIT Conf ("prod" / "dev", Bool verbose)
  */
-let conf = new Conf('dev' , true);
+let conf = new Conf('dev', true);
 
 /**
  *  INIT Computed value
  */
 let computed = new Computed("_variableAssambledDemo",
-    "this.values = this.states.get_variableForTesting + ' ' + this.states.get_creatorName",
-    ["event_variableForTesting", "event_creatorName"]
+    "this.computedStore._variableAssambledDemo.values = this.get_variableForTesting + ' ' + this.get_bindingVariable",
+    ["event_variableForTesting", "event_bindingVariable"]
 );
-console.log(computed)
 let computedStore = new ComputedStore([computed]);
 /**
  *  Construct States 
@@ -24,7 +23,8 @@ let computedStore = new ComputedStore([computed]);
 let states = new States({
     _variableForTesting: 'test',
     _creatorName: 'hummel',
-})
+    _bindingVariable: '',
+}, computedStore)
 
 
 const youNeed = new YouNeed(conf, states);
@@ -33,9 +33,11 @@ const youNeed = new YouNeed(conf, states);
  * function set{variableName} is auto-created 
  * USE this for aplied and dispatch to DOM 
  */
- document.getElementById('change').addEventListener('click', (e) => {
-    states.computedStore._variableForTesting.value(Math.random(0, 999) * 100000000)
+document.getElementById('change').addEventListener('click', (e) => {
+    states.computedStore._variableAssambledDemo.set(Math.random(0, 999) * 100000000)
+    console.log(states)
 })
+
 
 
 
